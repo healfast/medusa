@@ -1,0 +1,8 @@
+[project]
+name = "medusa"
+version = "0.1.0"
+description = "A lightweight local AI assistant scaffold"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
