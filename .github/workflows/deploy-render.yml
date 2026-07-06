@@ -1,0 +1,34 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  trigger-render-deploy:
+    name: Trigger Render deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Trigger Render Deploy via API
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
+            echo "Render secrets not set; skipping deploy. Configure RENDER_API_KEY and RENDER_SERVICE_ID in repository secrets."
+            exit 0
+          fi
+          echo "Triggering deploy for Render service: $RENDER_SERVICE_ID"
+          # Render expects a POST to /deploys for the service. The service id may already include 'srv-'.
+          SERVICE_ID="$RENDER_SERVICE_ID"
+          if [[ "$SERVICE_ID" != srv-* ]]; then
+            SERVICE_ID="srv-$SERVICE_ID"
+          fi
+          curl -s -X POST "https://api.render.com/deploy/srv-${SERVICE_ID}/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json" \
+            -d '{}' || true
