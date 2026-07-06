@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medusa — GitHub Pages Edition</title>
+    <meta
+      name="description"
+      content="Medusa is a lightweight AI assistant experience packaged as a simple GitHub Pages site."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">GitHub Pages · Static demo</p>
+          <h1>Medusa is now live as a simple GitHub Pages site.</h1>
+          <p class="lead">
+            This version gives you a fast, zero-setup landing page and an interactive demo
+            that feels like a lightweight assistant experience.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/healfast/medusa">View repository</a>
+            <a class="button secondary" href="https://github.com/healfast/medusa/actions">Open workflows</a>
+          </div>
+        </div>
+        <div class="card demo-card">
+          <h2>Try the demo</h2>
+          <div id="demo-output" class="demo-output">
+            Ask about planning, coding, or explanations and I’ll respond instantly.
+          </div>
+          <form id="demo-form" class="demo-form">
+            <input id="demo-input" type="text" placeholder="Ask anything..." autocomplete="off" />
+            <button type="submit">Ask</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="feature-grid">
+        <article class="card feature">
+          <h3>Zero setup</h3>
+          <p>No server or local Python runtime needed to view the site.</p>
+        </article>
+        <article class="card feature">
+          <h3>Fast preview</h3>
+          <p>The page is lightweight, responsive, and ready for GitHub Pages.</p>
+        </article>
+        <article class="card feature">
+          <h3>Easy to extend</h3>
+          <p>You can connect this to APIs or keep it as a polished front door for your project.</p>
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
