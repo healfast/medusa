@@ -26,12 +26,16 @@
           </div>
         </div>
         <div class="card demo-card">
-          <h2>Try the demo</h2>
+          <h2>Interactive demo</h2>
           <div id="demo-output" class="demo-output">
-            Ask about planning, coding, or explanations and I’ll respond instantly.
+            Ask about planning, coding, or explanations and I'll respond using local heuristics.
           </div>
           <form id="demo-form" class="demo-form">
             <input id="demo-input" type="text" placeholder="Ask anything..." autocomplete="off" />
+            <select id="demo-provider">
+              <option value="local">Local heuristics</option>
+              <option value="ollama">Ollama — llama2-uncensored</option>
+            </select>
             <button type="submit">Ask</button>
           </form>
         </div>

@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template_string, request
 
-from medusa_agent import generate_reply
 from local_llm import list_available_models
+from medusa_agent import generate_reply
 
 
 def create_app() -> Flask:
@@ -17,65 +17,67 @@ def create_app() -> Flask:
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Medusa Agent - Local AI</title>
+            <title>Medusa Agent — Local AI</title>
             <style>
-              body { font-family: Arial, sans-serif; margin: 0; background: #0f172a; color: #f8fafc; }
-              .shell { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
-              .card { background: #111827; border: 1px solid #334155; border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
-              h1 { margin-top: 0; }
-              #chat { min-height: 320px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; }
-              .bubble { padding: 12px 14px; border-radius: 12px; max-width: 80%; }
-              .user { align-self: flex-end; background: #2563eb; }
-              .assistant { align-self: flex-start; background: #1f2937; }
+              :root { color-scheme: dark; }
+              body {
+                margin: 0;
+                font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background: radial-gradient(circle at top, #0f172a 0%, #020617 45%, #020617 100%);
+                color: #e2e8f0;
+              }
+              .shell { max-width: 900px; margin: 0 auto; padding: 30px 18px 60px; }
+              .card {
+                background: rgba(15, 23, 42, 0.92);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 24px;
+                padding: 22px;
+                box-shadow: 0 18px 60px rgba(2, 6, 23, 0.45);
+              }
+              h1 { margin-top: 0; font-size: 2rem; }
+              .lead { color: #94a3b8; line-height: 1.7; }
+              #chat { min-height: 320px; margin: 16px 0; display: flex; flex-direction: column; gap: 10px; }
+              .bubble { padding: 12px 14px; border-radius: 14px; max-width: 82%; line-height: 1.6; }
+              .user { align-self: flex-end; background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+              .assistant { align-self: flex-start; background: #111827; border: 1px solid rgba(148, 163, 184, 0.16); }
               form { display: flex; flex-direction: column; gap: 10px; }
-              input, select { padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #020617; color: white; }
-              button { padding: 12px 16px; border: none; border-radius: 10px; background: #10b981; color: white; cursor: pointer; }
-              .settings { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-              .settings label { color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
-              .info { color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; }
-              .model-info { font-size: 0.85rem; color: #64748b; }
+              .controls { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 6px; }
+              label { color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
+              input, select { padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #020617; color: #f8fafc; }
+              button { padding: 12px 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, #10b981, #34d399); color: #052e16; cursor: pointer; font-weight: 700; }
+              .hint { color: #94a3b8; font-size: 0.95rem; }
+              .models { color: #64748b; font-size: 0.9rem; }
             </style>
           </head>
           <body>
             <div class="shell">
               <div class="card">
                 <h1>Medusa Agent</h1>
-                <p><strong>Local AI Assistant - No API Keys Required!</strong></p>
-                <p>Powered by <code>llama-cpp-python</code>. Download a GGUF model (e.g., Phi-3-mini, TinyLlama) and set the path below.</p>
+                <p class="lead">A fully local assistant for planning, coding, and explanations — free to run, with optional Ollama support and no API keys required.</p>
                 <div id="chat"></div>
                 <form id="chat-form">
-                  <div class="settings">
+                  <div class="controls">
                     <label>
-                      Provider:
+                      Provider
                       <select id="provider" name="provider">
-                        <option value="local">Local LLM</option>
-                        <option value="fable">Fable 5</option>
-                        <option value="claude_code">Claude Code</option>
-                        <option value="openai">OpenAI</option>
-                        <option value="huggingface">Hugging Face</option>
-                        <option value="venice">Venice</option>
-                        <option value="omni">Omni (Auto)</option>
+                        <option value="local">Local heuristics</option>
+                        <option value="ollama">Ollama — llama2-uncensored</option>
                       </select>
                     </label>
                     <label>
-                      Model Path:
-                      <input type="text" id="model_path" name="model_path" placeholder="path/to/model.gguf" value="" />
+                      Model path
+                      <input type="text" id="model_path" name="model_path" placeholder="~/models/phi-3-mini-4k-instruct-Q4_K_M.gguf" value="" />
                     </label>
                   </div>
-                  <div class="settings">
-                    <label style="color: #cbd5e1; display:flex; align-items:center; gap: 8px;">
+                  <div class="controls">
+                    <label>
                       <input type="checkbox" id="jailbreak" /> Hermes jailbreak mode
                     </label>
                   </div>
-                  <div class="info">
-                    <p><strong>Local LLM:</strong> Uses <code>llama-cpp-python</code>. Set the model path above (e.g., <code>~/models/phi-3-mini-4k-instruct-Q4_K_M.gguf</code>).</p>
-                    <p><strong>API Providers:</strong> Fable, Claude, OpenAI, Hugging Face, and Venice require API keys. Omni auto-selects the first configured provider.</p>
-                    <div class="model-info">
-                      <strong>Available Models:</strong> {{ model_options if model_options else "None found" }}
-                    </div>
-                  </div>
-                  <div style="display: flex; gap: 10px;">
-                    <input id="message" name="message" placeholder="Type a message..." autocomplete="off" required style="flex: 1;">
+                  <div class="hint">This experience prefers local models and repository-based answers. If Ollama is installed, it can use the local `llama2-uncensored` model.</div>
+                  <div class="models">Available GGUF models: {{ model_options if model_options else "None found" }}</div>
+                  <div class="controls">
+                    <input id="message" name="message" placeholder="Ask anything..." autocomplete="off" required style="flex: 1;">
                     <button type="submit">Send</button>
                   </div>
                 </form>
@@ -103,17 +105,15 @@ def create_app() -> Flask:
                 if (!message) return;
                 addBubble(message, 'user');
                 input.value = '';
-                const provider = providerSelect.value;
-                const modelPath = modelPathInput.value;
                 const response = await fetch('/api/chat', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ 
-                    message, 
-                    provider, 
-                    model_path: modelPath,
-                    jailbreak: jailCheckbox.checked 
-                  })
+                  body: JSON.stringify({
+                    message,
+                    provider: providerSelect.value,
+                    model_path: modelPathInput.value,
+                    jailbreak: jailCheckbox.checked,
+                  }),
                 });
                 const data = await response.json();
                 addBubble(data.reply, 'assistant');
@@ -130,18 +130,12 @@ def create_app() -> Flask:
         provider = payload.get("provider", "local")
         model_path = payload.get("model_path", None)
         jailbreak = bool(payload.get("jailbreak", False))
-        reply = generate_reply(
-            message, 
-            provider=provider, 
-            jailbreak=jailbreak,
-            model_path=model_path
-        )
+        reply = generate_reply(message, provider=provider, jailbreak=jailbreak, model_path=model_path)
         return jsonify({"reply": reply})
 
     @app.get("/api/models")
     def list_models():
-        models = list_available_models()
-        return jsonify({"models": models})
+        return jsonify({"models": list_available_models()})
 
     return app
 

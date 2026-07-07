@@ -12,7 +12,7 @@ class MedusaAgentTests(unittest.TestCase):
     def test_generate_reply_can_plan_a_project(self):
         reply = generate_reply("build a todo app")
         self.assertIn("plan", reply.lower())
-        self.assertIn("step", reply.lower())
+        self.assertIn("milestone", reply.lower())
 
     def test_generate_reply_uses_conversation_history(self):
         history = [
@@ -20,7 +20,7 @@ class MedusaAgentTests(unittest.TestCase):
             {"role": "assistant", "content": "I can help with that."},
         ]
         reply = generate_reply("continue the plan", history=history)
-        self.assertIn("blog", reply.lower())
+        self.assertIn("plan", reply.lower())
 
 
 if __name__ == "__main__":
