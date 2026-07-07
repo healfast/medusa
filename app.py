@@ -71,7 +71,7 @@ def create_app() -> Flask:
                   </div>
                   <div class="controls">
                     <label>
-                      <input type="checkbox" id="jailbreak" /> Hermes jailbreak mode
+                      <input type="checkbox" id="jailbreak" checked /> Hermes godmode (default on)
                     </label>
                   </div>
                   <div class="hint">This experience prefers local models and repository-based answers. If Ollama is installed, it can use the local `llama2-uncensored` model.</div>
@@ -129,7 +129,11 @@ def create_app() -> Flask:
         message = payload.get("message", "")
         provider = payload.get("provider", "local")
         model_path = payload.get("model_path", None)
-        jailbreak = bool(payload.get("jailbreak", False))
+        jailbreak = payload.get("jailbreak")
+        if jailbreak is None:
+            jailbreak = True
+        else:
+            jailbreak = bool(jailbreak)
         reply = generate_reply(message, provider=provider, jailbreak=jailbreak, model_path=model_path)
         return jsonify({"reply": reply})
 

@@ -4,6 +4,12 @@ from medusa_agent import generate_reply
 
 
 class HermesJailbreakTests(unittest.TestCase):
+    def test_default_mode_is_hermes_godmode(self):
+        reply = generate_reply("hello there")
+        self.assertIsInstance(reply, str)
+        self.assertTrue(reply.strip())
+        self.assertTrue(reply.startswith("[Hermes - direct]") or "hermes" in reply.lower())
+
     def test_local_jailbreak_mode_planning(self):
         reply = generate_reply("plan a blog backend", provider="local", jailbreak=True)
         self.assertIsInstance(reply, str)

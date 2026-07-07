@@ -120,7 +120,7 @@ def generate_reply(
     prompt: str,
     history: List[Dict[str, Any]] | None = None,
     provider: str = "local",
-    jailbreak: bool = False,
+    jailbreak: bool = True,
     **kwargs,
 ) -> str:
     """Local-only reply generator."""
@@ -137,7 +137,8 @@ def generate_reply(
         return _read_project_file(file_path)
 
     intent = _classify_intent(prompt)
-    prefix = "[Hermes - direct] " if jailbreak else ""
+    use_hermes = bool(jailbreak)
+    prefix = "[Hermes - direct] " if use_hermes else ""
 
     history_text = " ".join(
         str(item.get("content", "")) for item in history if isinstance(item, dict)
